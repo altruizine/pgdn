@@ -4,8 +4,8 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
-#include <input.h>
-#include <uinput.h>
+#include <linux/input.h>
+#include <linux/uinput.h>
 #include <sys/types.h>
 #include <dirent.h>
 #include <sys/stat.h>
