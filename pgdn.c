@@ -17,8 +17,8 @@
 #define KEYMASK 0xfff;
 #define SHIFT 0x10000
 
-static int MAP102=0;
-static int MAP116=0;
+static int MAP_back=0;
+static int MAP_menu=0;
 
 #define die(str, args...) do { \
         perror(str); \
@@ -26,22 +26,24 @@ static int MAP116=0;
         exit(EXIT_FAILURE); \
     } while(0)
 
-int k114 = 114;
-int k115 = 115;
+int k_left = 105;
+int k_right = 106;
+int k_back = 158;
+int k_menu = 357;
 
 struct profile {
     char name[256];
     int pid;
-    int t114;
-    int t115;
-    int t102;
-    int t116;
+    int t_left;
+    int t_right;
+    int t_back;
+    int t_menu;
     struct profile *next;
 } *profiles, *defaultprofile;
 
 struct timeval lastreadpids;
 
-struct profile * addprofile(char *name, int t114, int t115, int t102, int t116) {
+struct profile * addprofile(char *name, int t_left, int t_right, int t_back, int t_menu) {
     struct profile *newprof;
 
     newprof=profiles;
@@ -55,10 +57,10 @@ struct profile * addprofile(char *name, int t114, int t115, int t102, int t116) 
         profiles=newprof;
     }
 
-    newprof->t114 = t114;
-    newprof->t115 = t115;
-    newprof->t102 = t102;
-    newprof->t116 = t116;
+    newprof->t_left = t_left;
+    newprof->t_right = t_right;
+    newprof->t_back = t_back;
+    newprof->t_menu = t_menu;
     return newprof;
 }
 
@@ -168,11 +170,11 @@ main(void)
         while(fgets(buf,1024,conf)) {
             int i,j,k;
             char pname[256];
-            int p114, p115, p102, p116;
+            int p_left, p_right, p_back, p_menu;
 
             if(sscanf(buf, "map %i", &j)==1) {
-                if(j==102)MAP102=1;
-                if(j==116)MAP116=1;
+                if(j==k_back)MAP_back=1;
+                if(j==k_menu)MAP_menu=1;
             }
             if(sscanf(buf, "key %i", &j)==1) {
                 ioctl(fd, UI_SET_KEYBIT, j);
@@ -180,8 +182,8 @@ main(void)
             if(sscanf(buf, "keys %i %i", &j, &k)==2) {
                 for(i=j;i<=k;i++) ioctl(fd, UI_SET_KEYBIT, i);
             }
-            if(sscanf(buf, "profile %255s %i %i %i %i", pname, &p114, &p115, &p102, &p116)==3+MAP102+MAP116) {
-                addprofile(pname, p114, p115, p102, p116);
+            if(sscanf(buf, "profile %255s %i %i %i %i", pname, &p_left, &p_right, &p_back, &p_menu)==3+MAP_back+MAP_menu) {
+                addprofile(pname, p_left, p_right, p_back, p_menu);
             }
         }
         fclose(conf);
@@ -224,7 +226,7 @@ main(void)
             rd = read(e1fd, ev, sizeof(struct input_event) * 64);
             for(i=0;i*sizeof(struct input_event)<rd;i++) {
                 if((ev[i].type == EV_KEY) && (ev[i].value == 1) && 
-                        ((ev[i].code == k114) || (ev[i].code == k115) || (MAP102 && (ev[i].code==102)) || (MAP116 && (ev[i].code==116)))
+                        ((ev[i].code == k_left) || (ev[i].code == k_right) || (MAP_back && (ev[i].code==k_back)) || (MAP_menu && (ev[i].code==k_menu)))
                         ) {
                     struct timeval tv;
                     gettimeofday(&tv,NULL);
@@ -261,17 +263,17 @@ main(void)
 //                    fprintf(stderr, "profile: %s\n", curprofile->name);
                 }
                 if(ev[i].type==EV_KEY) {
-                    if(ev[i].code == k114) {
-                        sendkey(fd, curprofile->t114, ev[i].value);
+                    if(ev[i].code == k_left) {
+                        sendkey(fd, curprofile->t_left, ev[i].value);
                     }
-                    if(ev[i].code == k115) {
-                        sendkey(fd, curprofile->t115, ev[i].value);
+                    if(ev[i].code == k_right) {
+                        sendkey(fd, curprofile->t_right, ev[i].value);
                     }
-                    if(MAP102 && (ev[i].code == 102)) {
-                        sendkey(fd, curprofile->t102, ev[i].value);
+                    if(MAP_back && (ev[i].code == k_back)) {
+                        sendkey(fd, curprofile->t_back, ev[i].value);
                     }
-                    if(MAP116 && (ev[i].code == 116)) {
-                        sendkey(fd, curprofile->t116, ev[i].value);
+                    if(MAP_menu && (ev[i].code == k_menu)) {
+                        sendkey(fd, curprofile->t_menu, ev[i].value);
                     }
                 }
             }
@@ -279,7 +281,7 @@ main(void)
         if((r>0)&& FD_ISSET(ffd,&fds)) {
             char buf[1024];
             char pname[256];
-            int p114, p115, p102, p116;
+            int p_left, p_right, p_back, p_menu;
             int rd;
             char *n;
             rd = read(ffd, buf, 1024);
@@ -292,21 +294,21 @@ main(void)
             if((rd>4) && (strncmp(buf, "map ", 4)==0)) {
                 int i;
                 i=strtol(buf+4,&n, 0);
-                if(i==114) {
+                if(i==k_left) {
                     int m;
                     m=0;
                     if(rd>n-buf) {
                         m=strtol(n, NULL, 0);
                     }
-                    defaultprofile->t114 = m;
+                    defaultprofile->t_left = m;
                 }
-                if(i==115) {
+                if(i==k_right) {
                     int m;
                     m=0;
                     if(rd>n-buf) {
                         m=strtol(n, NULL, 0);
                     }
-                    defaultprofile->t115 = m;
+                    defaultprofile->t_right = m;
                 }
             }
             if((rd>5) && (strncmp(buf, "send ", 5)==0)) {
@@ -317,8 +319,8 @@ main(void)
                     sendkey(fd,i,0);
                 }
             }
-            if((rd>10) && (sscanf(buf, "profile %255s %i %i %i %i", pname, &p114, &p115, &p102, &p116)==3+MAP102+MAP116)) {
-                addprofile(pname, p114, p115, p102, p116);
+            if((rd>10) && (sscanf(buf, "profile %255s %i %i %i %i", pname, &p_left, &p_right, &p_back, &p_menu)==3+MAP_back+MAP_menu)) {
+                addprofile(pname, p_left, p_right, p_back, p_menu);
             }
         }
     }
