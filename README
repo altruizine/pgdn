@@ -1,9 +1,24 @@
+# -*- org -*-
+
 Dynamic button remapper
 
-Originally developed for Samsung Galaxy Note GT-N7000
+* Original button mappings on Sony Reader PRS-T1
+  * /dev/input/event0
+    * 105 - Left (* normally unmapped)
+    * 106 - Right (*)
+    * 102 - Home
+    * 158 - Back
+    * 357 - Option
+  * /dev/input/event[24]
+    * 116 - Power ???
 
-Original developer:
-  MatanZ @ XDA-developers
-Original source:
-  http://forum.xda-developers.com/showthread.php?t=1480130
-  http://my.svgalib.org/android/
+* Credits
+
+  Originally developed for Samsung Galaxy Note GT-N7000
+  
+  Original developer:
+    MatanZ @ XDA-developers
+  Original source:
+    http://forum.xda-developers.com/showthread.php?t=1480130
+    http://my.svgalib.org/android/
+  

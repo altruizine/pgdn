@@ -12,7 +12,7 @@
 #include <sys/stat.h>
 #include <sys/time.h>
 
-#define FIFONAME "/app-cache/.uinput-virtual-keyboard-fifo"
+#define FIFONAME "/cache/.uinput-virtual-keyboard-fifo"
 
 #define KEYMASK 0xfff;
 #define SHIFT 0x10000
@@ -128,11 +128,12 @@ main(void)
 
     profiles = NULL;
 
-    addprofile("org.mozilla.firefox", KEY_SPACE, SHIFT|KEY_SPACE, 102, 116);
-    addprofile("com.android.browser", KEY_SPACE, SHIFT|KEY_SPACE, 102, 116);
-    addprofile("com.quoord.tapatalkpro.activity", KEY_DOWN, KEY_UP, 102, 116);
-    addprofile("com.sec.android.app.camera", 212, 212, 102, 212);
-    defaultprofile = addprofile("default", KEY_VOLUMEDOWN, KEY_VOLUMEUP, 102, 116);
+    addprofile("org.mozilla.firefox", KEY_SPACE, SHIFT|KEY_SPACE, k_back, k_menu);
+    addprofile("com.android.browser", KEY_SPACE, SHIFT|KEY_SPACE, k_back, k_menu);
+//    addprofile("com.quoord.tapatalkpro.activity", KEY_DOWN, KEY_UP, k_back, k_menu);
+//    addprofile("com.sec.android.app.camera", 212, 212, k_back, 212);
+//    defaultprofile = addprofile("default", KEY_VOLUMEDOWN, KEY_VOLUMEUP, k_back, k_menu);
+    defaultprofile = addprofile("default", KEY_LEFT, KEY_RIGHT, k_back, k_menu);
 
     gettimeofday(&tv1,NULL);
     setpids();
@@ -158,8 +159,10 @@ main(void)
         ioctl(fd, UI_SET_KEYBIT, KEY_VOLUMEDOWN);
         ioctl(fd, UI_SET_KEYBIT, KEY_VOLUMEUP);
         ioctl(fd, UI_SET_KEYBIT, KEY_DOWN);
-        ioctl(fd, UI_SET_KEYBIT, KEY_PAGEDOWN);
         ioctl(fd, UI_SET_KEYBIT, KEY_UP);
+        ioctl(fd, UI_SET_KEYBIT, KEY_RIGHT);
+        ioctl(fd, UI_SET_KEYBIT, KEY_LEFT);
+        ioctl(fd, UI_SET_KEYBIT, KEY_PAGEDOWN);
         ioctl(fd, UI_SET_KEYBIT, KEY_PAGEUP);
         ioctl(fd, UI_SET_KEYBIT, KEY_SEND);
         ioctl(fd, UI_SET_KEYBIT, KEY_CAMERA);
@@ -206,9 +209,9 @@ main(void)
     if(ioctl(fd, UI_DEV_CREATE) < 0)
         die("error: ioctl");
 
-    e1fd = open("/dev/input/event1", O_RDONLY);
+    e1fd = open("/dev/input/event0", O_RDONLY);
     if(e1fd<0)
-        die("error: open /dev/input/event1");
+        die("error: open /dev/input/event0");
 
     nfds = (ffd>e1fd ? ffd : e1fd) +1;
 
