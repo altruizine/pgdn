@@ -210,6 +210,8 @@ main(void)
 
     nfds = (ffd>e1fd ? ffd : e1fd) +1;
 
+    struct profile *curprofile = defaultprofile;
+
     while(1) {
         struct input_event ev[64];
         int r,i;
@@ -219,7 +221,6 @@ main(void)
         r=select(nfds, &fds, NULL, NULL, NULL);
         if((r>0)&& FD_ISSET(e1fd,&fds)) {
             int rd;
-            struct profile *curprofile;
             rd = read(e1fd, ev, sizeof(struct input_event) * 64);
             for(i=0;i*sizeof(struct input_event)<rd;i++) {
                 if((ev[i].type == EV_KEY) && (ev[i].value == 1) && 
@@ -238,7 +239,8 @@ main(void)
                         if(curprofile->pid>0) {
                             char fname[256];
                             FILE *f;
-                            snprintf(fname,255,"/proc/%i/oom_adj");
+                            snprintf(fname,255,"/proc/%i/oom_adj",
+				     curprofile->pid);
                             f=fopen(fname,"r");
                             if(f) {
                                 int oom_adj;
