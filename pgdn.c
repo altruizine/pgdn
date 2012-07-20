@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
@@ -118,11 +119,8 @@ main(void)
     int nfds;
     FILE *conf;
     struct uinput_user_dev uidev;
-    struct input_event     ev;
-    int                    dx, dy;
-    int                    i;
     fd_set fds;
-    struct timeval tv1,tv2;
+    struct timeval tv1;
 
     daemon(0, 0);
 
@@ -214,7 +212,6 @@ main(void)
 
     while(1) {
         struct input_event ev[64];
-        struct input_event oev;
         int r,i;
         FD_ZERO(&fds);
         FD_SET(ffd, &fds);
