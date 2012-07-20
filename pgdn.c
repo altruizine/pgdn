@@ -195,6 +195,8 @@ main(void)
 
     mkfifo(FIFONAME, 0777);
     ffd=open(FIFONAME, O_RDONLY|O_NDELAY);
+    if (ffd < 0)
+        die("error: open fifo");
 
     memset(&uidev, 0, sizeof(uidev));
     snprintf(uidev.name, UINPUT_MAX_NAME_SIZE, "uinput-virtual-keyboard");
