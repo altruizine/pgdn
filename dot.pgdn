@@ -1,0 +1,9 @@
+# Example configuration file -- save as /sdcard/.pgdn
+# or connect device via adb and say "make push-config"
+#
+# Do not use default config (Left/Right) for Sony Reader app -- it
+# gets confused
+profile com.sony.drbd.ebook.reader 0 0
+# These apps support volume-key navigation (needs to be enabled in app's config)
+profile com.aldiko.android 115 114
+profile com.google.android.apps.reader 115 114

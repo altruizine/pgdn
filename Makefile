@@ -38,6 +38,8 @@ push: $(BIN)
 	adb push $(BIN) /data/local/bin/$(BIN)
 	adb shell chmod 755 /data/local/bin/$(BIN)
 
+push-config:
+	adb push dot.pgdn /sdcard/.pgdn
 
 clean:
 	rm -rf $(OBJS) $(BIN)
