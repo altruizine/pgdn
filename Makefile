@@ -32,11 +32,12 @@ OBJS= $(SRCS:.c=.o)
 
 all: $(BIN)
 
+$(BIN): $(OBJS)
+
 push: $(BIN)
 	adb push $(BIN) /data/local/bin/$(BIN)
 	adb shell chmod 755 /data/local/bin/$(BIN)
 
-pgdn: $(OBJS)
 
 clean:
 	rm -rf $(OBJS) $(BIN)
