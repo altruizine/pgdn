@@ -30,7 +30,7 @@ LD= $(TOOLCHAIN)-gcc
 BIN= pgdn
 OBJS= $(SRCS:.c=.o)
 
-all: $(BIN)
+all: $(BIN) $(BIN).zip
 
 $(BIN): $(OBJS)
 
@@ -41,5 +41,11 @@ push: $(BIN)
 push-config:
 	adb push dot.pgdn /sdcard/.pgdn
 
+dist: $(BIN).zip
+
+$(BIN).zip: $(BIN)
+	rm -f $@
+	zip $@ pgdn dot.pgdn
+
 clean:
-	rm -rf $(OBJS) $(BIN)
+	rm -rf $(OBJS) $(BIN) $(BIN).zip
