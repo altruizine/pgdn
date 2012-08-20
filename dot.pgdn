@@ -5,6 +5,8 @@
 # otherwise they get confused
 profile com.sony.drbd.ebook.reader 0 0
 profile com.android.browser 0 0
+# Cool Reader has native support for the Sony Reader.
+profile org.coolreader 0 0
 # These apps support volume-key navigation (needs to be enabled in app's config)
 profile com.aldiko.android 115 114
 profile com.google.android.apps.reader 115 114
