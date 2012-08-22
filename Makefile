@@ -2,6 +2,11 @@
 # to override where it's being looked for.
 SDK = ${HOME}/src/android/android-sdk-linux_x86
 
+# Release user alias and keystore.  Use Makefile.local to override.
+-include Makefile.local
+ALIAS ?= release
+KEYSTORE ?= $${HOME}/.android/$(ALIAS).keystore
+
 export PATH := ${SDK}/tools:${PATH}
 
 APP = Buttonmap
@@ -18,19 +23,49 @@ $(APPDIR)/local.properties:
 
 build: $(APPDIR)/bin/$(APP)-debug.apk
 
-$(APPDIR)/bin/$(APP)-debug.apk: $(APPDIR)/local.properties $(ASSETS)
+build-release release: $(APPDIR)/bin/$(APP).apk
+
+$(APPDIR)/bin/$(APP)-debug.apk: $(APPDIR)/local.properties $(ASSETS) app-deb-done
+
+app-deb-done:
 	cd $(APPDIR); ant debug
 
-$(APPDIR)/assets/dot.pgdn: dot.pgdn
+$(APPDIR)/bin/$(APP)-release-unsigned.apk: $(APPDIR)/local.properties $(ASSETS) app-rel-done
+
+app-rel-done:
+	cd $(APPDIR); ant release
+
+$(APPDIR)/bin/$(APP)-release-signed.apk: $(APPDIR)/bin/$(APP)-release-unsigned.apk
+	cp $< $@
+	jarsigner -verbose -digestalg SHA1 -keystore $(KEYSTORE) $@ $(ALIAS)
+
+$(APPDIR)/bin/$(APP).apk: $(APPDIR)/bin/$(APP)-release-signed.apk
+	rm -f $@
+	zipalign 4 $< $@
+
+$(APPDIR)/assets/dot.pgdn: pgdn/dot.pgdn
 	mkdir -p $(APPDIR)/assets
-	cp $^ $@
+	cp $< $@
 
 $(APPDIR)/assets/pgdn: pgdn-done 
 	mkdir -p $(APPDIR)/assets
-	cp pgdn/pgdn $@
+	cp -p pgdn/pgdn $@
 
 pgdn-done:
 	make -C pgdn pgdn
+
+
+push: $(APPDIR)/bin/$(APP)-debug.apk
+	adb install -r $< || adb install $<
+
+push-release: $(APPDIR)/bin/$(APP).apk
+	adb install -r $< || adb install $<
+
+push-config:
+	adb push pgdn/dot.pgdn /sdcard/.pgdn
+
+uninstall:
+	adb uninstall com.github.altruizine.Buttonmap
 
 clean:
 	cd $(APPDIR); rm -rf local.properties build.xml proguard-project.txt \
