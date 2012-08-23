@@ -7,6 +7,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.content.Context;
 import android.os.IBinder;
+import android.os.Environment;
 
 public class BootService extends Service
 {
@@ -37,8 +38,11 @@ public class BootService extends Service
 	    }
 
 	    // Make sure we have the configuration file on the SD card.
-	    // Should we wait till SD Card is mounted?  Probably not --
-	    // the internal SD card should be mounted at this point.
+	    // Wait till the SD Card is mounted r/w
+	    while (! Environment.MEDIA_MOUNTED
+		     .equals(Environment.getExternalStorageState())) {
+		Thread.sleep(10000);
+	    }
 
 	    // Unpack the configuration file unconditionally to
 	    // /sdcard/.pgdn.dist.  Copy it to /sdcard/.pgdn if that does
@@ -48,12 +52,14 @@ public class BootService extends Service
 	    is.read(buffer);
 	    is.close();
 
-	    f = new File("/sdcard/.pgdn.dist");
+	    File sdcard = Environment.getExternalStorageDirectory();
+
+	    f = new File(sdcard + "/.pgdn.dist");
 	    FileOutputStream os = new FileOutputStream(f);
 	    os.write(buffer);
 	    os.close();
 
-	    f = new File("/sdcard/.pgdn");
+	    f = new File(sdcard + "/.pgdn");
 	    if (! f.exists()) {
 		os = new FileOutputStream(f);
 		os.write(buffer);
