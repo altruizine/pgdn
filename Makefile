@@ -61,8 +61,8 @@ push: $(APPDIR)/bin/$(APP)-debug.apk
 push-release: $(APPDIR)/bin/$(APP).apk
 	adb install -r $< || adb install $<
 
-push-config:
-	adb push pgdn/dot.pgdn /sdcard/.pgdn
+push-config dist pgdn.zip:
+	$(MAKE) -C pgdn $@
 
 uninstall:
 	adb uninstall com.github.altruizine.Buttonmap
