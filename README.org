@@ -1,0 +1,61 @@
+Buttonmap app and pgdn daemon for rooted Sony Reader PRS-T1 only
+#+AUTHOR: altruizine
+
+*Use the Left / Right keys in all reader apps*
+
+* Overview
+
+  Various ebook reader apps recognize different buttons for turning to
+  the next or previous page. The [[http://wiki.mobileread.com/wiki/PRST1_Rooting_and_Tweaks#Remap_Page_Turn_Buttons][MobileRead wiki offers various static
+  button mappings for the Left / Right keys]], but none of the static
+  mappings is sufficient for all reader apps.
+
+  Inspired by [[http://forum.xda-developers.com/showthread.php?p=22164338][this hack on the XDA forum]], I've modified the pgdn
+  program provided there to work for the PRS-T1. With this hack, it's
+  possible to remap the Left / Right keys dynamically, depending on
+  which app is currently running, to Dpad Left/Right, Volume Up/Down,
+  nothing (needed for Sony's built-in reader app), or whichever other
+  key is needed.
+  
+  The Buttonmap app wraps the pgdn daemon and the default
+  configuration file into an easily installable package.
+   
+  The default configuration file allows using the Left / Right keys
+  for the following apps (tested): Reader (built-in), Browser
+  (built-in), Aldiko Reader, Amazon Kindle for Android, FBReader,
+  InstaFetch Pro, Google Reader, Google Books (old 1.x versions),
+  CoolReader.
+
+* Installation
+
+  * Download the Buttonmap.apk file and install it on the Reader.
+
+  * Reboot.  If your "su" uses the Superuser app, grant Buttonmap
+    permanent root privileges when the superuser request pops up.
+    This occurs shortly after reboot; don't let the request time out,
+    or you will have to reboot again.
+
+* Configuration
+
+  The pgdn configuration file is /sdcard/.pgdn.  Buttonmap creates an
+  example configuration file as /sdcard/.pgdn.dist.  It also creates a
+  new /sdcard/.pgdn file if it does not yet exist, but it does not
+  overwrite an existing one.  When you uprade, you can copy the
+  contents of .pgdn.dist to .pgdn or simply delete your the old .pgdn.
+
+  When you change the .pgdn config file, you need to restart the pgdn
+  daemon as root ("killall pgdn &&
+  /data/data/com.github.altruizine.Buttonmap/files/pgdn"), or just
+  reboot the system.
+
+* Acknowledgments
+
+  Originally developed for Samsung Galaxy Note GT-N7000
+  
+  Original developer:
+    MatanZ @ XDA-developers
+
+  Original source:
+  * http://forum.xda-developers.com/showthread.php?t=1480130
+  * http://my.svgalib.org/android/
+  
