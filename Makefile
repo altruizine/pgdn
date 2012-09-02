@@ -61,8 +61,15 @@ push: $(APPDIR)/bin/$(APP)-debug.apk
 push-release: $(APPDIR)/bin/$(APP).apk
 	adb install -r $< || adb install $<
 
-push-config dist pgdn.zip:
+push-config pgdn.zip:
 	$(MAKE) -C pgdn $@
+
+$(APP).apk.zip: $(APPDIR)/bin/$(APP).apk
+	rm -f $@
+	cd $(dir $<); zip "$(abspath $@)" $(notdir $<)
+
+dist: $(APP).apk.zip
+	$(MAKE) -C pgdn dist
 
 uninstall:
 	adb uninstall com.github.altruizine.Buttonmap
@@ -71,3 +78,4 @@ clean:
 	cd $(APPDIR); rm -rf local.properties build.xml proguard-project.txt \
 	  bin gen assets
 	make -C pgdn clean
+	rm -f $(APP).apk.zip
