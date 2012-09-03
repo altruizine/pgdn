@@ -4,3 +4,5 @@ proguard-project.txt
 bin
 gen
 assets
+AndroidManifest.xml
+AndroidManifest.xml.out

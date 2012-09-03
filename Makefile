@@ -12,7 +12,9 @@ export PATH := ${SDK}/tools:${PATH}
 APP = Buttonmap
 APPDIR = app
 
-ASSETS = $(APPDIR)/assets/pgdn $(APPDIR)/assets/dot.pgdn
+BUILDDEPS = $(APPDIR)/AndroidManifest.xml \
+  $(APPDIR)/assets/pgdn \
+  $(APPDIR)/assets/dot.pgdn
 
 all: build
 
@@ -25,12 +27,12 @@ build: $(APPDIR)/bin/$(APP)-debug.apk
 
 build-release release: $(APPDIR)/bin/$(APP).apk
 
-$(APPDIR)/bin/$(APP)-debug.apk: $(APPDIR)/local.properties $(ASSETS) app-deb-done
+$(APPDIR)/bin/$(APP)-debug.apk: $(APPDIR)/local.properties $(BUILDDEPS) app-deb-done
 
 app-deb-done:
 	cd $(APPDIR); ant debug
 
-$(APPDIR)/bin/$(APP)-release-unsigned.apk: $(APPDIR)/local.properties $(ASSETS) app-rel-done
+$(APPDIR)/bin/$(APP)-release-unsigned.apk: $(APPDIR)/local.properties $(BUILDDEPS) app-rel-done
 
 app-rel-done:
 	cd $(APPDIR); ant release
@@ -54,6 +56,15 @@ $(APPDIR)/assets/pgdn: pgdn-done
 pgdn-done:
 	make -C pgdn pgdn
 
+$(APPDIR)/AndroidManifest.xml: $(APPDIR)/AndroidManifest.xml.in version
+	version="$$(cat version)"; \
+	  versionname="$$(printf '%d.%02d.%02d' \
+	                         `expr $$version / 10000` \
+	                         `expr $$version % 10000 / 100` \
+	                         `expr $$version % 100`)"; \
+	  sed -e "s/%versioncode%/$$version/g; \
+	          s/%versionname%/$$versionname/g" $< > $@.out
+	mv $@.out $@
 
 push: $(APPDIR)/bin/$(APP)-debug.apk
 	adb install -r $< || adb install $<
@@ -71,11 +82,14 @@ $(APP).apk.zip: $(APPDIR)/bin/$(APP).apk
 dist: $(APP).apk.zip
 	$(MAKE) -C pgdn dist
 
+newversion:
+	newvers="$$(expr `cat version` + 1)"; echo $$newvers > version
+
 uninstall:
 	adb uninstall com.github.altruizine.Buttonmap
 
 clean:
 	cd $(APPDIR); rm -rf local.properties build.xml proguard-project.txt \
-	  bin gen assets
+	  bin gen assets AndroidManifest.xml AndroidManifest.xml.out
 	make -C pgdn clean
 	rm -f $(APP).apk.zip
