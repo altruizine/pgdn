@@ -43,7 +43,7 @@ push-config:
 
 dist: $(BIN).zip
 
-$(BIN).zip: $(BIN)
+$(BIN).zip: $(BIN) dot.pgdn
 	rm -f $@
 	zip $@ pgdn dot.pgdn
 
