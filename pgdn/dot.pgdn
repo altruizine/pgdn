@@ -16,3 +16,7 @@ profile org.ebookdroid 115 114
 # Terminal emulator: Allow mapping VolUp to Control. Send Alt_L for Right.
 key 56
 profile jackpal.androidterm 115 56
+# Adobe Reader: Use P and N for previous and next page
+key 25
+key 49
+profile com.adobe.reader 25 49
