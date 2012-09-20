@@ -12,6 +12,7 @@ profile com.aldiko.android 115 114
 profile com.google.android.apps.reader 115 114
 profile org.geometerplus.zlibrary.ui.android 115 114
 profile com.ls.manga 115 114 
+profile net.leetsoft.mangareader 115 114
 profile org.ebookdroid 115 114
 # Terminal emulator: Allow mapping VolUp to Control. Send Alt_L for Right.
 key 56
